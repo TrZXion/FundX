@@ -14,15 +14,15 @@ This Flutter application is designed for tracking stocks and managing user accou
 
 ### 1. Sign-Up Process
 
-![Sign-Up Process](https://your-domain.com/assets/Signup.gif)
+![Sign-Up Process](https://github.com/TrZXion/FundX/blob/main/Frontend/assets/Signup.gif)
 
 ### 2. Sign In & Logout
 
-![Sign In and Logout](https://your-domain.com/assets/Signin+logout.gif)
+![Sign In and Logout](https://github.com/TrZXion/FundX/blob/main/Frontend/assets/Signin%2Blogout.gif)
 
 ### 3. Fetching Data
 
-![Fetching Data](https://your-domain.com/assets/FetchData.gif)
+![Fetching Data](https://github.com/TrZXion/FundX/blob/main/Frontend/assets/Fetch%20Data.gif)
 
 
 
