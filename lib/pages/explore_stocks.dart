@@ -17,7 +17,7 @@ class _ExploreStocksPageState extends State<ExploreStocksPage> {
   @override
   void initState() {
     super.initState();
-    _loadStockData(); // Load data from SharedPreferences
+    _loadStockData();
   }
 
   Future<void> _loadStockData() async {
@@ -25,38 +25,58 @@ class _ExploreStocksPageState extends State<ExploreStocksPage> {
     final storedData = prefs.getString('stocks_data');
 
     if (storedData != null) {
-      // Load data from SharedPreferences
       setState(() {
         _stocks = jsonDecode(storedData);
         _isLoading = false;
       });
     } else {
-      // Fetch data from API
       _fetchStockData();
     }
   }
 
   Future<void> _fetchStockData() async {
-    const userId =
-        4; // Replace with actual user ID or fetch from your auth logic
-    const url = 'http://localhost:3000/stocks/$userId';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final userId = prefs.getInt('userId');
+
+    if (token == null || userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('User is not authenticated. Please log in.')),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    const url = 'http://localhost:3000/stocks'; // Update URL as needed
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       if (response.statusCode == 200) {
-        // Save data to SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('stocks_data', response.body);
+        final decodedResponse = jsonDecode(response.body);
+        if (decodedResponse is List) {
+          await prefs.setString('stocks_data', response.body);
 
-        setState(() {
-          _stocks = jsonDecode(response.body);
-          _isLoading = false;
-        });
+          setState(() {
+            _stocks = decodedResponse;
+            _isLoading = false;
+          });
+        } else {
+          throw Exception('Invalid data format');
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Failed to load stock data: ${response.body}')),
+              content:
+                  Text('Failed to load stock data: ${response.reasonPhrase}')),
         );
         setState(() {
           _isLoading = false;
@@ -80,6 +100,12 @@ class _ExploreStocksPageState extends State<ExploreStocksPage> {
         backgroundColor: Colors.black,
         title:
             const Text('Explore Stocks', style: TextStyle(color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchStockData, // Refresh the stock data
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -114,25 +140,20 @@ class _ExploreStocksPageState extends State<ExploreStocksPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Stock name on the left side
                           Text(
                             symbol,
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 18),
                           ),
-                          // Current price and change info on the right side
                           Column(
-                            crossAxisAlignment: CrossAxisAlignment
-                                .end, // Align text to the right
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                 '\$${currentPrice.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 18),
                               ),
-                              const SizedBox(
-                                  height:
-                                      8), // Space between price and change info
+                              const SizedBox(height: 8),
                               Text(
                                 '${isPositiveChange ? '+' : ''}${priceChange.toStringAsFixed(2)} (${priceChangePercent.toStringAsFixed(2)}%)',
                                 style: TextStyle(

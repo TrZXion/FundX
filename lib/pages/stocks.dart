@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'home.dart';
 
 class StocksPage extends StatelessWidget {
   const StocksPage({Key? key}) : super(key: key);
@@ -24,7 +27,9 @@ class StocksPage extends StatelessWidget {
             icon: const CircleAvatar(
               backgroundImage: AssetImage('icons/avatar.png'),
             ),
-            onPressed: () {},
+            onPressed: () {
+              _showLogoutDialog(context);
+            },
           ),
         ],
       ),
@@ -46,7 +51,7 @@ class StocksPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: _buildButton('Explore all stocks', () {
+                  child: _buildButton('Explore stocks', () {
                     Navigator.pushNamed(context, '/explore-stocks');
                   }),
                   flex: 1,
@@ -106,6 +111,49 @@ class StocksPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('userId');
+
+    // Navigate to the HomePage
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+      (route) => false, // Remove all previous routes
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _logout(context); // Perform logout
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.lightGreen,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
     );
   }
 

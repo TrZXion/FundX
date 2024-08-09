@@ -1,13 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SignUpPage extends StatelessWidget {
+// Define the function to store the token and user ID
+Future<void> storeTokenAndUserId(String token, int userId) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('token', token);
+  await prefs.setInt('userId', userId);
+}
+
+class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
+
+  @override
+  _SignUpPageState createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
 
   Future<void> _signUp(
       BuildContext context, String email, String password) async {
-    const url = 'http://localhost:3000/signup'; // Update to your backend URL
+    setState(() {
+      _isLoading = true;
+    });
+
+    const url =
+        'http://localhost:3000/signup'; // Replace with your computer's IP
 
     try {
       final response = await http.post(
@@ -19,35 +41,71 @@ class SignUpPage extends StatelessWidget {
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
         final token = responseBody['token'];
-        // Navigate to the main page or dashboard
-        Navigator.pushReplacementNamed(
-            context, '/stocks'); // Adjust route as needed
+        final userId = responseBody['userId'];
+
+        if (token != null && userId != null) {
+          await storeTokenAndUserId(token, userId);
+          print('Sign-up successful: $responseBody');
+
+          // Initialize stocks for the user
+          const initStockUrl = 'http://localhost:3000/init-stocks';
+          final initStockResponse = await http.post(
+            Uri.parse(initStockUrl),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+          );
+
+          if (initStockResponse.statusCode == 200) {
+            final initStockBody = jsonDecode(initStockResponse.body);
+            print('Stocks initialized: $initStockBody');
+
+            // Display a success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Stocks successfully initialized')),
+            );
+
+            Navigator.pushReplacementNamed(context, '/stocks');
+          } else {
+            // Handle stock initialization failure
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Stock initialization failed: ${initStockResponse.reasonPhrase}')),
+            );
+          }
+        } else {
+          print('Error: Missing token or userId in response');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sign-up failed: Invalid response')),
+          );
+        }
       } else if (response.statusCode == 400) {
-        // If user already exists, navigate to sign-in page
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User already exists. Please sign in.')),
         );
-        Navigator.pushReplacementNamed(
-            context, '/sign-in'); // Adjust route as needed
+        Navigator.pushReplacementNamed(context, '/sign-in');
       } else {
-        // Handle other errors
+        print('Sign-up failed with status: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sign-up failed: ${response.body}')),
         );
       }
     } catch (error) {
-      // Handle network error
+      print('Sign-up error: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $error')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -106,12 +164,18 @@ class SignUpPage extends StatelessWidget {
               style: const TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                _signUp(context, emailController.text, passwordController.text);
-              },
-              child: const Text('Sign Up'),
-            ),
+            _isLoading
+                ? const LinearProgressIndicator(
+                    backgroundColor: Colors.grey,
+                    color: Colors.blue,
+                  )
+                : ElevatedButton(
+                    onPressed: () {
+                      _signUp(context, emailController.text,
+                          passwordController.text);
+                    },
+                    child: const Text('Sign Up'),
+                  ),
           ],
         ),
       ),
