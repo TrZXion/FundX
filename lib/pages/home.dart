@@ -1,16 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:test_app/pages/stocks.dart'; // Make sure this import is correct
+import 'package:test_app/pages/signup.dart';
+import 'package:test_app/pages/stocks.dart'; // Ensure this import is correct
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // TextEditingControllers for handling text input
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+  _HomePageState createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _isAuthenticated = false;
+
+  Future<void> _signIn(String email, String password) async {
+    final url = 'http://localhost:3000/signin'; // Update to your backend URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        final token = responseBody['token'];
+        // Store the token or any authentication status
+        setState(() {
+          _isAuthenticated = true;
+        });
+        // Navigate to the main page or dashboard
+        Navigator.pushReplacementNamed(
+            context, '/stocks'); // Adjust route as needed
+      } else {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign-in failed: ${response.body}')),
+        );
+      }
+    } catch (error) {
+      // Handle network error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -102,9 +144,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Handle sign in logic here
-                print(
-                    'Sign in with ${emailController.text} and ${passwordController.text}');
+                _signIn(emailController.text, passwordController.text);
               },
               child: const Text('Sign In'),
             ),
@@ -133,9 +173,12 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to sign up page
-                      Navigator.pushNamed(
-                          context, '/sign-up'); // Ensure this route is set up
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpPage(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Colors.grey[800], // Background color
@@ -152,14 +195,16 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 32.0),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StocksPage(),
-                  ),
-                );
-              },
+              onPressed: _isAuthenticated
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const StocksPage(),
+                        ),
+                      );
+                    }
+                  : null, // Disable button if not authenticated
               style: ElevatedButton.styleFrom(
                 primary: Colors.lightGreen.shade900, // Background color
                 onPrimary: Colors.white, // Text color

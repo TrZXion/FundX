@@ -46,22 +46,24 @@ class StocksPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: _buildButton('Explore'),
+                  child: _buildButton('Explore all stocks', () {
+                    Navigator.pushNamed(context, '/explore-stocks');
+                  }),
                   flex: 1,
                 ),
                 const SizedBox(width: 5),
                 Flexible(
-                  child: _buildButton('Holdings'),
+                  child: _buildButton('Holdings', () {}),
                   flex: 1,
                 ),
                 const SizedBox(width: 5),
                 Flexible(
-                  child: _buildButton('My WatchList'),
+                  child: _buildButton('My WatchList', () {}),
                   flex: 1,
                 ),
                 const SizedBox(width: 5),
                 Flexible(
-                  child: _buildButton('+ Watchlist'),
+                  child: _buildButton('+ Watchlist', () {}),
                   flex: 1,
                 ),
               ],
@@ -107,24 +109,21 @@ class StocksPage extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(String text) {
+  Widget _buildButton(String text, VoidCallback onPressed) {
     return ElevatedButton(
-      onPressed: () {
-        // Handle button press
-      },
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        primary: Colors.grey[900], // Background color of the button
-        onPrimary: Colors.white, // Text color
+        primary: Colors.grey[900],
+        onPrimary: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5), // Button border radius
+          borderRadius: BorderRadius.circular(5),
         ),
-        padding: EdgeInsets.zero, // Remove default padding
+        padding: EdgeInsets.zero,
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[900], // Background color of the text container
-          borderRadius:
-              BorderRadius.circular(5), // Border radius around the text
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(5),
         ),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         child: Center(
