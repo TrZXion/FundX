@@ -1,16 +1,49 @@
-# test_app
+# Flutter Stock Tracking App
 
-A new Flutter project.
+## Overview
+
+This Flutter application is designed for tracking stocks and managing user accounts. It features a user-friendly interface for sign-up and stock management, including initializing stock data.
+
+## Features
+
+- **User Sign-Up:** Allows users to register with their email and password.
+- **Stock Tracking:** Fetches and displays real-time stock data.
+- **Stock Initialization:** Automatically sets up stock data for new users.
+
+## GIFs
+
+### 1. Sign-Up Process
+
+![Sign-Up Process](https://your-domain.com/assets/Signup.gif)
+
+### 2. Sign In & Logout
+
+![Sign In and Logout](https://your-domain.com/assets/Signin+logout.gif)
+
+### 3. Fetching Data
+
+![Fetching Data](https://your-domain.com/assets/FetchData.gif)
+
+
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- [Flutter SDK](https://flutter.dev/docs/get-started/install)
+- [Dart SDK](https://dart.dev/get-dart) (included with Flutter)
+- [Android Studio](https://developer.android.com/studio) or [Xcode](https://developer.apple.com/xcode/) for iOS development
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### Installation
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. **Clone the repository:**
+
+   ```git clone <repository_url>```\
+   ```cd <repository_directory >```
+
+2. **Install dependencies:**
+  ```flutter pub get```
+
+3. **Run the app:**
+  ```flutter run```
+
