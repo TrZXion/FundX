@@ -2,15 +2,15 @@
 
 ## Overview
 
-This Flutter application is designed for tracking stocks and managing user accounts. It features a user-friendly interface for sign-up and stock management, including initializing stock data.
+This Flutter application is designed for tracking stocks and managing user accounts. It features a user-friendly interface for sign-in, sign-up and stock management.
 
 ## Features
 
-- **User Sign-Up:** Allows users to register with their email and password.
-- **Stock Tracking:** Fetches and displays real-time stock data.
+- **User Sign-Up, Sign-In:** Allows users to register with their email and password.
 - **Stock Initialization:** Automatically sets up stock data for new users.
+- **Stock Tracking:** Fetches and displays real-time stock data.
 
-## GIFs
+## Preview
 
 ### 1. Sign-Up Process
 
