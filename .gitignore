@@ -29,30 +29,37 @@
 /build/
 
 # Frontend-specific Flutter/Dart/Pub related
-Frontend/.dart_tool/
-Frontend/.packages
-Frontend/.pub-cache/
-Frontend/build/
+/Frontend/.dart_tool/
+/Frontend/.packages
+/Frontend/.pub-cache/
+/Frontend/build/
+/Frontend/.pubspec.lock
+/Frontend/.flutter-plugins
+///Frontend/.flutter-plugins-dependencies
+/Frontend/.idea/
+/Frontend/.vscode/
+/Frontend/.trunk
+/Frontend/.
 
 # Android specific
 /android/app/debug
 /android/app/profile
 /android/app/release
-Frontend/android/local.properties
+/Frontend/android/local.properties
 
 # iOS specific
-Frontend/ios/Flutter/Flutter.framework
-Frontend/ios/Flutter/App.framework
-Frontend/ios/Pods/
-Frontend/ios/Flutter/flutter_export_environment.sh
-Frontend/ios/Flutter/Debug.xcconfig
-Frontend/ios/Flutter/Release.xcconfig
+/Frontend/ios/Flutter/Flutter.framework
+///Frontend/ios/Flutter/App.framework
+/Frontend/ios/Pods/
+/Frontend/ios/Flutter/flutter_export_environment.sh
+/Frontend/ios/Flutter/Debug.xcconfig
+/Frontend/ios/Flutter/Release.xcconfig
 
 # Node.js (if applicable)
-Frontend/node_modules/
+/Frontend/node_modules/
 
 # Environment files
-Frontend/**/*.env
+/Frontend/**/*.env
 
 # Web related
 lib/generated_plugin_registrant.dart
